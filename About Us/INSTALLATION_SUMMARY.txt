@@ -1,0 +1,59 @@
+
+══════════════════════════════════════════════════════════
+         NITCCONNECT
+══════════════════════════════════════════════════════════
+
+✅ WHAT'S INCLUDED:
+   - Complete HTML frontend (1 file)
+   - Full PHP backend (11 files)
+   - MySQL database schema (1 SQL file)
+   - Documentation (3 files)
+══════════════════════════════════════════════════════════
+
+📋 INSTALLATION CHECKLIST:
+
+□ Step 1: Install XAMPP
+   Download: https://www.apachefriends.org
+
+□ Step 2: Start Apache & MySQL in XAMPP
+
+□ Step 3: Create folder: C:\xampp\htdocs\nitcconnect\
+
+□ Step 4: Copy ALL 16 files to that folder
+
+□ Step 5: Import database_setup.sql in phpMyAdmin
+   URL: http://localhost/phpmyadmin
+
+□ Step 6: Open http://localhost/nitcconnect/index.html
+
+══════════════════════════════════════════════════════════
+
+🎯 FEATURES:
+   ✓ User signup & login
+   ✓ Club joining (+20 points)
+   ✓ Event registration (+15 points)
+   ✓ Hostel ticket system
+   ✓ Leaderboard rankings
+   ✓ User dashboard
+   ✓ Study materials (+10 points)
+   ✓ Secure authentication
+   ✓ Session management
+
+══════════════════════════════════════════════════════════
+
+📊 DATABASE:
+   Name: nitcconnect
+   Tables: 9
+   Sample Data: Yes (clubs & events included)
+
+══════════════════════════════════════════════════════════
+
+🔧 CONFIG:
+   Host: localhost
+   User: root
+   Pass: (blank)
+   DB: nitcconnect
+
+══════════════════════════════════════════════════════════
+
+Version 1.0 | October 18, 2025

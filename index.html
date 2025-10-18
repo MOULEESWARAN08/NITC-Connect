@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NITCConnect - Campus Life Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #06B6D4;
+            --accent: #8B5CF6;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--gray-800);
+        }
+
+        /* Glassmorphism Utility */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .glass-dark {
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.mobile-hidden {
+            transform: translateX(-100%);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3730a3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .badge-info {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--secondary);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--error);
+        }
+
+        /* Auth Pages */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-subtitle {
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                z-index: 100;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .grid-4 {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Hide elements */
+        .hidden {
+            display: none !important;
+        }
+
+        /* AI Recommender specific styles */
+        .upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--gray-50);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 0.25rem;
+        }
+
+        .job-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .job-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        }
+
+        .match-percentage {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Chart container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+
+        /* Calendar styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--gray-200);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 1rem;
+            min-height: 80px;
+            position: relative;
+        }
+
+        .calendar-day.has-event {
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .calendar-event {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+        }
+
+        /* File input styling */
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-label:hover {
+            background: #3730a3;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--gray-200);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray-500);
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Pages -->
+    <div id="auth-page" class="auth-container">
+        <div class="auth-card fade-in">
+            <div class="auth-logo">
+                <i class="fas fa-graduation-cap" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h1 class="auth-title">NITCConnect</h1>
+                <p class="auth-subtitle">Your campus life platform</p>
+            </div>
+            
+            <form id="auth-form">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="email" placeholder="student@nitc.ac.in" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="password" placeholder="Password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+                
+                <div style="text-align: center; color: var(--gray-600); font-size: 0.9rem;">
+                    Demo Credentials:<br>
+                    <strong>Student:</strong> student@nitc.ac.in / student123<br>
+                    <strong>Admin:</strong> admin@nitc.ac.in / admin123
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="app-container hidden">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>NITCConnect</span>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-page="dashboard">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="marketplace">
+                        <i class="fas fa-shopping-bag"></i>
+                        Marketplace
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="lost-found">
+                        <i class="fas fa-search"></i>
+                        Lost &amp; Found
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="events">
+                        <i class="fas fa-calendar"></i>
+                        Events
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="clubs">
+                        <i class="fas fa-users"></i>
+                        Clubs
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="placements">
+                        <i class="fas fa-chart-line"></i>
+                        Placements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="hostel-tickets">
+                        <i class="fas fa-ticket-alt"></i>
+                        Hostel Tickets
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="faculty-booking">
+                        <i class="fas fa-user-tie"></i>
+                        Faculty Booking
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="hall-booking">
+                        <i class="fas fa-building"></i>
+                        Hall Booking
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="leaderboard">
+                        <i class="fas fa-trophy"></i>
+                        Leaderboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="ai-recommender">
+                        <i class="fas fa-robot"></i>
+                        AI Job Recommender
+                    </a>
+                </li>
+                <li class="nav-item admin-only hidden">
+                    <a href="#" class="nav-link" data-page="admin">
+                        <i class="fas fa-cog"></i>
+                        Admin Panel
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <button class="btn btn-outline" id="menu-toggle" style="display: none;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search anything...">
+                </div>
+                
+                <div class="user-profile">
+                    <div class="profile-avatar" id="profile-avatar">U</div>
+                    <span id="user-name">Student</span>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div id="page-content">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page-content fade-in">
+                    <h1 style="color: white; margin-bottom: 2rem; font-size: 2.5rem;">Welcome to NITCConnect</h1>
+                    
+                    <!-- Stats Cards -->
+                    <div class="grid grid-4" style="margin-bottom: 2rem;">
+                        <div class="stat-card">
+                            <div class="stat-number" id="user-rank">5</div>
+                            <div class="stat-label">Leaderboard Rank</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="user-points">540</div>
+                            <div class="stat-label">Total Points</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">12</div>
+                            <div class="stat-label">Events Attended</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">2</div>
+                            <div class="stat-label">Active Tickets</div>
+                        </div>
+                    </div>
+
+                    <!-- AI Insights Card -->
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: var(--primary);">🤖 AI Insights &amp; Recommendations</h3>
+                        <div class="grid grid-2">
+                            <div>
+                                <h4>Suggested for You</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li style="padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">📚 Study Group: Data Structures</li>
+                                    <li style="padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">🎯 Upcoming: CP Hub Contest</li>
+                                    <li style="padding: 0.5rem 0;">💼 Career: Software Engineer roles</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4>Quick Actions</h4>
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    <button class="btn btn-primary" onclick="showPage('ai-recommender')">AI Job Match</button>
+                                    <button class="btn btn-secondary" onclick="showPage('events')">Browse Events</button>
+                                    <button class="btn btn-accent" onclick="showPage('clubs')">Join Clubs</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">Recent Activity</h3>
+                            <div style="space-y: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--gray-200);">
+                                    <i class="fas fa-trophy" style="color: var(--warning);"></i>
+                                    <div>
+                                        <div style="font-weight: 600;">Earned 20 points</div>
+                                        <div style="font-size: 0.8rem; color: var(--gray-600);">Club participation - Robotics Club</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--gray-200);">
+                                    <i class="fas fa-calendar-check" style="color: var(--success);"></i>
+                                    <div>
+                                        <div style="font-weight: 600;">Event RSVP</div>
+                                        <div style="font-size: 0.8rem; color: var(--gray-600);">CONCEPTUALIZE 2025</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0;">
+                                    <i class="fas fa-ticket-alt" style="color: var(--error);"></i>
+                                    <div>
+                                        <div style="font-weight: 600;">Ticket Raised</div>
+                                        <div style="font-size: 0.8rem; color: var(--gray-600);">WiFi connectivity issue</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">Upcoming Events</h3>
+                            <div style="space-y: 1rem;">
+                                <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--gray-200);">
+                                    <div style="font-weight: 600; color: var(--primary);">CONCEPTUALIZE 2025</div>
+                                    <div style="font-size: 0.8rem; color: var(--gray-600);">Nov 7, 2025 • 9:00 AM</div>
+                                    <div style="font-size: 0.8rem;">Ideathon on Smart Power Systems</div>
+                                </div>
+                                <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--gray-200);">
+                                    <div style="font-weight: 600; color: var(--primary);">Lifelong Learning Conference</div>
+                                    <div style="font-size: 0.8rem; color: var(--gray-600);">Nov 10, 2025 • 10:00 AM</div>
+                                    <div style="font-size: 0.8rem;">International Conference</div>
+                                </div>
+                                <div style="padding: 0.75rem 0;">
+                                    <div style="font-weight: 600; color: var(--primary);">Women's Empowerment</div>
+                                    <div style="font-size: 0.8rem; color: var(--gray-600);">Nov 20, 2025 • 2:00 PM</div>
+                                    <div style="font-size: 0.8rem;">Women's Cell, NITC</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other pages will be loaded here dynamically -->
+                <div id="dynamic-content" class="hidden"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Modal Title</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div id="modal-body">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div id="toast-message">Message</div>
+    </div>
+
+    <script>
+        // Application State
+        let currentUser = null;
+        let currentPage = 'dashboard';
+        
+        // Sample Data (In-memory storage)
+        const appData = {
+            users: [
+                { email: 'student@nitc.ac.in', password: 'student123', role: 'student', name: 'Karthik Varma', rank: 5, points: 540 },
+                { email: 'admin@nitc.ac.in', password: 'admin123', role: 'admin', name: 'Admin User', rank: 1, points: 1000 }
+            ],
+            marketplaceItems: [
+                { id: 1, category: 'Books', title: 'Engineering Mathematics by BS Grewal', price: 250, seller: 'Arjun Menon', image: 'placeholder' },
+                { id: 2, category: 'Electronics', title: 'Arduino Uno Starter Kit', price: 1200, seller: 'Priya Nair', image: 'placeholder' },
+                { id: 3, category: 'Cycles', title: 'Hero Sprint Gear Cycle', price: 3500, seller: 'Rahul Krishnan', image: 'placeholder' },
+                { id: 4, category: 'Books', title: 'Data Structures and Algorithms', price: 350, seller: 'Sneha Pillai', image: 'placeholder' }
+            ],
+            lostFoundItems: [
+                { id: 1, type: 'lost', item: 'Blue JanSport Backpack', description: 'Contains laptop and notebooks', location: 'Central Library, 2nd Floor', date: '2025-10-15', contact: 'student001@nitc.ac.in' },
+                { id: 2, type: 'found', item: 'Black Wallet', description: 'Contains ID cards', location: 'Hostel Mess', date: '2025-10-16', contact: 'student045@nitc.ac.in' }
+            ],
+            events: [
+                { id: 1, title: 'CONCEPTUALIZE 2025', description: 'Ideathon on Smart Power Systems', date: '2025-11-07', time: '09:00 AM', organizer: 'IEEE PES Student Chapter', category: 'Technical', location: 'Seminar Hall A' },
+                { id: 2, title: 'International Conference on Lifelong Learning', date: '2025-11-10', time: '10:00 AM', organizer: 'NITC Academic Council', category: 'Academic', location: 'Main Auditorium' },
+                { id: 3, title: "Women's Empowerment Conference", date: '2025-11-20', time: '02:00 PM', organizer: "Women's Cell, NITC", category: 'Social', location: 'Convention Center' }
+            ],
+            clubs: [
+                { id: 1, name: 'CP Hub', category: 'Technical', description: 'Programming club focused on Competitive Coding', focus: 'Competitive Programming', members: 150, activities: 'Weekly contests, Workshops, Mock interviews' },
+                { id: 2, name: 'Club Mathematica', category: 'Academic', description: 'Mathematics enthusiasts club', focus: 'Advanced Mathematics', members: 85, activities: 'Math olympiads, Lectures, Problem solving sessions' },
+                { id: 3, name: 'Robotics Club', category: 'Technical', description: 'Build and program robots', focus: 'Robotics & Automation', members: 120, activities: 'Robot competitions, Workshops, Projects' }
+            ],
+            placementStats: {
+                year: '2024-25',
+                highest_package: '₹54 LPA',
+                average_package: '₹12.5 LPA',
+                placement_percentage: 92.5,
+                top_recruiters: ['Google', 'Microsoft', 'Amazon', 'Goldman Sachs', 'Texas Instruments'],
+                department_wise: [
+                    { department: 'Computer Science', placed: 95, percentage: 98 },
+                    { department: 'Electronics', placed: 88, percentage: 92 },
+                    { department: 'Mechanical', placed: 82, percentage: 89 }
+                ]
+            },
+            hostelTickets: [
+                { id: 1, issue: 'WiFi connectivity issues in rooms', description: 'Internet connection dropping frequently', hostel: 'Hostel A', room: 'A-205', status: 'Open', priority: 'High', date: '2025-10-16', category: 'Internet' },
+                { id: 2, issue: 'Water leakage in bathroom', description: 'Ceiling leak in bathroom', hostel: 'Hostel B', room: 'B-312', status: 'In Progress', priority: 'Critical', date: '2025-10-14', category: 'Maintenance' }
+            ],
+            faculty: [
+                { id: 1, name: 'Dr. Rajesh Kumar', department: 'Computer Science & Engineering', email: 'rajesh.k@nitc.ac.in', available_slots: ['Monday 10:00-11:00 AM', 'Wednesday 02:00-03:00 PM', 'Friday 11:00-12:00 PM'] },
+                { id: 2, name: 'Dr. Priya Sharma', department: 'Electronics & Communication', email: 'priya.s@nitc.ac.in', available_slots: ['Tuesday 11:00-12:00 AM', 'Thursday 03:00-04:00 PM'] },
+                { id: 3, name: 'Dr. Anil Menon', department: 'Mechanical Engineering', email: 'anil.m@nitc.ac.in', available_slots: ['Monday 02:00-03:00 PM', 'Wednesday 10:00-11:00 AM'] }
+            ],
+            halls: [
+                { id: 1, name: 'Seminar Hall A', capacity: 100, facilities: 'Projector, AC, Sound System', available: true },
+                { id: 2, name: 'Main Auditorium', capacity: 500, facilities: 'Stage, Lighting, Sound System, AC', available: true },
+                { id: 3, name: 'Conference Room 1', capacity: 50, facilities: 'Projector, Whiteboard, AC', available: false }
+            ],
+            leaderboard: [
+                { rank: 1, name: 'Arjun Menon', points: 850, level: 'Gold', activities: ['Club Leader - CP Hub', 'Organized 3 events', 'Helped 25+ peers', 'Active forum contributor'] },
+                { rank: 2, name: 'Sneha Radhakrishnan', points: 720, level: 'Silver', activities: ['Club Member - Robotics', 'Attended 12 events', 'Forum moderator'] },
+                { rank: 3, name: 'Rahul Pillai', points: 680, level: 'Silver', activities: ['Event Volunteer', 'Study Group Leader', 'Helped 15+ peers'] },
+                { rank: 4, name: 'Divya Suresh', points: 590, level: 'Bronze', activities: ['Club Member - Mathematica', 'Peer Mentor'] },
+                { rank: 5, name: 'Karthik Varma', points: 540, level: 'Bronze', activities: ['Event Participant', 'Forum Contributor'] }
+            ],
+            jobRecommendations: [
+                { job_title: 'Software Engineer', company: 'Google', match_percentage: 95, required_skills: ['Python', 'Data Structures', 'Algorithms', 'System Design'], location: 'Bangalore' },
+                { job_title: 'Machine Learning Engineer', company: 'Microsoft', match_percentage: 88, required_skills: ['Python', 'TensorFlow', 'Machine Learning', 'Deep Learning'], location: 'Hyderabad' },
+                { job_title: 'Full Stack Developer', company: 'Amazon', match_percentage: 82, required_skills: ['JavaScript', 'React', 'Node.js', 'MongoDB'], location: 'Bangalore' }
+            ]
+        };
+
+        // Authentication
+        document.getElementById('auth-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Validate NITC email
+            if (!email.endsWith('@nitc.ac.in')) {
+                showToast('Please use your NITC email address', 'error');
+                return;
+            }
+            
+            const user = appData.users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-page').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                
+                // Update UI for user
+                document.getElementById('user-name').textContent = user.name;
+                document.getElementById('profile-avatar').textContent = user.name.charAt(0);
+                document.getElementById('user-rank').textContent = user.rank;
+                document.getElementById('user-points').textContent = user.points;
+                
+                // Show admin menu if admin
+                if (user.role === 'admin') {
+                    document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+                }
+                
+                showToast('Welcome to NITCConnect!', 'success');
+            } else {
+                showToast('Invalid credentials', 'error');
+            }
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            currentUser = null;
+            document.getElementById('app').classList.add('hidden');
+            document.getElementById('auth-page').classList.remove('hidden');
+            document.getElementById('auth-form').reset();
+            
+            // Hide admin menu
+            document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+            
+            showToast('Logged out successfully', 'success');
+        });
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.id === 'logout-btn') return;
+                
+                e.preventDefault();
+                const page = this.dataset.page;
+                if (page) {
+                    showPage(page);
+                }
+            });
+        });
+
+        function showPage(page) {
+            currentPage = page;
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+            
+            // Show page content
+            if (page === 'dashboard') {
+                document.getElementById('dashboard-page').classList.remove('hidden');
+                document.getElementById('dynamic-content').classList.add('hidden');
+            } else {
+                document.getElementById('dashboard-page').classList.add('hidden');
+                document.getElementById('dynamic-content').classList.remove('hidden');
+                loadPageContent(page);
+            }
+        }
+
+        function loadPageContent(page) {
+            const content = document.getElementById('dynamic-content');
+            
+            switch(page) {
+                case 'marketplace':
+                    content.innerHTML = getMarketplacePage();
+                    break;
+                case 'lost-found':
+                    content.innerHTML = getLostFoundPage();
+                    break;
+                case 'events':
+                    content.innerHTML = getEventsPage();
+                    break;
+                case 'clubs':
+                    content.innerHTML = getClubsPage();
+                    break;
+                case 'placements':
+                    content.innerHTML = getPlacementsPage();
+                    initializePlacementCharts();
+                    break;
+                case 'hostel-tickets':
+                    content.innerHTML = getHostelTicketsPage();
+                    break;
+                case 'faculty-booking':
+                    content.innerHTML = getFacultyBookingPage();
+                    break;
+                case 'hall-booking':
+                    content.innerHTML = getHallBookingPage();
+                    break;
+                case 'leaderboard':
+                    content.innerHTML = getLeaderboardPage();
+                    break;
+                case 'ai-recommender':
+                    content.innerHTML = getAIRecommenderPage();
+                    initializeFileUpload();
+                    break;
+                case 'admin':
+                    if (currentUser.role === 'admin') {
+                        content.innerHTML = getAdminPage();
+                    }
+                    break;
+            }
+        }
+
+        // Page Templates
+        function getMarketplacePage() {
+            const categories = ['All', 'Books', 'Electronics', 'Cycles', 'Furniture', 'Stationery'];
+            
+            return `
+                <div class="page-content fade-in">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h1 style="color: white;">Marketplace</h1>
+                        <button class="btn btn-primary" onclick="openModal('marketplace-form')">
+                            <i class="fas fa-plus"></i> Post Item
+                        </button>
+                    </div>
+                    
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                            <select class="form-select" style="width: auto;" onchange="filterMarketplace(this.value)">
+                                ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+                            </select>
+                            <input type="text" class="form-input" placeholder="Search items..." style="flex: 1; min-width: 200px;" oninput="searchMarketplace(this.value)">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-3" id="marketplace-grid">
+                        ${appData.marketplaceItems.map(item => `
+                            <div class="card" data-category="${item.category}">
+                                <div style="background: var(--gray-200); height: 200px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                                    <i class="fas fa-image" style="font-size: 3rem; color: var(--gray-400);"></i>
+                                </div>
+                                <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">${item.title}</h3>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <span class="badge badge-info">${item.category}</span>
+                                    <span style="font-size: 1.2rem; font-weight: 700; color: var(--success);">₹${item.price}</span>
+                                </div>
+                                <div style="margin-bottom: 1rem; color: var(--gray-600);">
+                                    <i class="fas fa-user"></i> ${item.seller}
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%;" onclick="contactSeller('${item.seller}')">
+                                    <i class="fas fa-envelope"></i> Contact Seller
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getLostFoundPage() {
+            return `
+                <div class="page-content fade-in">
+                    <h1 style="color: white; margin-bottom: 2rem;">Lost &amp; Found</h1>
+                    
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('lost')">Lost Items</button>
+                        <button class="tab" onclick="switchTab('found')">Found Items</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="lost-tab">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                            <h2>Lost Items</h2>
+                            <button class="btn btn-error" onclick="openModal('lost-item-form')">
+                                <i class="fas fa-exclamation-triangle"></i> Report Lost Item
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-2">
+                            ${appData.lostFoundItems.filter(item => item.type === 'lost').map(item => `
+                                <div class="card">
+                                    <h3 style="color: var(--error); margin-bottom: 1rem;">${item.item}</h3>
+                                    <p style="margin-bottom: 1rem;">${item.description}</p>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="margin-bottom: 0.5rem;"><strong>Location:</strong> ${item.location}</div>
+                                        <div style="margin-bottom: 0.5rem;"><strong>Date:</strong> ${item.date}</div>
+                                        <div><strong>Contact:</strong> ${item.contact}</div>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="contactPerson('${item.contact}')">
+                                        <i class="fas fa-envelope"></i> Contact
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="found-tab">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                            <h2>Found Items</h2>
+                            <button class="btn btn-success" onclick="openModal('found-item-form')">
+                                <i class="fas fa-check-circle"></i> Report Found Item
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-2">
+                            ${appData.lostFoundItems.filter(item => item.type === 'found').map(item => `
+                                <div class="card">
+                                    <h3 style="color: var(--success); margin-bottom: 1rem;">${item.item}</h3>
+                                    <p style="margin-bottom: 1rem;">${item.description}</p>
+                                    <div style="margin-bottom: 1rem;">
+                                        <div style="margin-bottom: 0.5rem;"><strong>Location:</strong> ${item.location}</div>
+                                        <div style="margin-bottom: 0.5rem;"><strong>Date:</strong> ${item.date}</div>
+                                        <div><strong>Contact:</strong> ${item.contact}</div>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="contactPerson('${item.contact}')">
+                                        <i class="fas fa-envelope"></i> Contact
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getEventsPage() {
+            const categories = ['All', 'Technical', 'Cultural', 'Academic', 'Sports', 'Social'];
+            
+            return `
+                <div class="page-content fade-in">
+                    <h1 style="color: white; margin-bottom: 2rem;">Campus Events</h1>
+                    
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                            <select class="form-select" style="width: auto;" onchange="filterEvents(this.value)">
+                                ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+                            </select>
+                            <input type="text" class="form-input" placeholder="Search events..." style="flex: 1; min-width: 200px;" oninput="searchEvents(this.value)">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-2" id="events-grid">
+                        ${appData.events.map(event => `
+                            <div class="card" data-category="${event.category}">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                    <h3 style="color: var(--primary); margin-bottom: 0.5rem;">${event.title}</h3>
+                                    <span class="badge badge-info">${event.category}</span>
+                                </div>
+                                <p style="margin-bottom: 1rem; color: var(--gray-600);">${event.description || 'Event description'}</p>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <div style="margin-bottom: 0.5rem;"><i class="fas fa-calendar"></i> ${event.date}</div>
+                                    <div style="margin-bottom: 0.5rem;"><i class="fas fa-clock"></i> ${event.time}</div>
+                                    <div style="margin-bottom: 0.5rem;"><i class="fas fa-map-marker-alt"></i> ${event.location}</div>
+                                    <div><i class="fas fa-users"></i> ${event.organizer}</div>
+                                </div>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="btn btn-primary" onclick="rsvpEvent(${event.id})">
+                                        <i class="fas fa-check"></i> RSVP
+                                    </button>
+                                    <button class="btn btn-outline" onclick="addToCalendar(${event.id})">
+                                        <i class="fas fa-calendar-plus"></i> Add to Calendar
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getClubsPage() {
+            const categories = ['All', 'Technical', 'Cultural', 'Sports', 'Literary', 'Social Service', 'Academic'];
+            
+            return `
+                <div class="page-content fade-in">
+                    <h1 style="color: white; margin-bottom: 2rem;">Clubs &amp; Organizations</h1>
+                    
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                            <select class="form-select" style="width: auto;" onchange="filterClubs(this.value)">
+                                ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+                            </select>
+                            <input type="text" class="form-input" placeholder="Search clubs..." style="flex: 1; min-width: 200px;" oninput="searchClubs(this.value)">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-3" id="clubs-grid">
+                        ${appData.clubs.map(club => `
+                            <div class="card" data-category="${club.category}">
+                                <div style="background: var(--gray-200); height: 150px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                                    <i class="fas fa-users" style="font-size: 3rem; color: var(--gray-400);"></i>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                    <h3 style="color: var(--primary);">${club.name}</h3>
+                                    <span class="badge badge-info">${club.category}</span>
+                                </div>
+                                <p style="margin-bottom: 1rem; color: var(--gray-600);">${club.description}</p>
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="margin-bottom: 0.5rem;"><strong>Focus:</strong> ${club.focus}</div>
+                                    <div style="margin-bottom: 0.5rem;"><strong>Members:</strong> ${club.members}</div>
+                                    <div><strong>Activities:</strong> ${club.activities}</div>
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%;" onclick="joinClub(${club.id})">
+                                    <i class="fas fa-user-plus"></i> Join Club
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getPlacementsPage() {
+            return `
+                <div class="page-content fade-in">
+                    <h1 style="color: white; margin-bottom: 2rem;">Placement Analytics</h1>
+                    
+                    <!-- Key Stats -->
+                    <div class="grid grid-4" style="margin-bottom: 2rem;">
+                        <div class="card" style="text-align: center; background: linear-gradient(135deg, var(--success), #059669); color: white;">
+                            <h3 style="margin-bottom: 0.5rem;">${appData.placementStats.highest_package}</h3>
+                            <p>Highest Package</p>
+                        </div>
+                        <div class="card" style="text-align: center; background: linear-gradient(135deg, var(--primary), #3730a3); color: white;">
+                            <h3 style="margin-bottom: 0.5rem;">${appData.placementStats.average_package}</h3>
+                            <p>Average Package</p>
+                        </div>
+                        <div class="card" style="text-align: center; background: linear-gradient(135deg, var(--secondary), #0891b2); color: white;">
+                            <h3 style="margin-bottom: 0.5rem;">${appData.placementStats.placement_percentage}%</h3>
+                            <p>Placement Rate</p>
+                        </div>
+                        <div class="card" style="text-align: center; background: linear-gradient(135deg, var(--accent), #7c3aed); color: white;">
+                            <h3 style="margin-bottom: 0.5rem;">${appData.placementStats.year}</h3>
+                            <p>Academic Year</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts -->
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">Top Recruiters</h3>
+                            <div class="chart-container">
+                                <canvas id="recruiters-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">Department-wise Placements</h3>
+                            <div class="chart-container">
+                                <canvas id="department-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Department Stats Table -->
+                    <div class="card" style="margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Department Statistics</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Department</th>
+                                    <th>Students Placed</th>
+                                    <th>Placement %</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${appData.placementStats.department_wise.map(dept => `
+                                    <tr>
+                                        <td>${dept.department}</td>
+                                        <td>${dept.placed}</td>
+                                        <td>${dept.percentage}%</td>
+                                        <td><span class="badge badge-success">Excellent</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getHostelTicketsPage() {
+            return `
+                <div class="page-content fade-in">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h1 style="color: white;">Hostel Issue Tickets</h1>
+                        <button class="btn btn-primary" onclick="openModal('ticket-form')">
+                            <i class="fas fa-plus"></i> Raise New Ticket
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-2">
+                        ${appData.hostelTickets.map(ticket => `
+                            <div class="card">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                    <h3 style="color: var(--primary);">${ticket.issue}</h3>
+                                    <span class="badge ${
+                                        ticket.status === 'Open' ? 'badge-error' :
+                                        ticket.status === 'In Progress' ? 'badge-warning' :
+                                        ticket.status === 'Resolved' ? 'badge-success' : 'badge-info'
+                                    }">${ticket.status}</span>
+                                </div>
+                                <p style="margin-bottom: 1rem; color: var(--gray-600);">${ticket.description}</p>
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="margin-bottom: 0.5rem;"><strong>Hostel:</strong> ${ticket.hostel}</div>
+                                    <div style="margin-bottom: 0.5rem;"><strong>Room:</strong> ${ticket.room}</div>
+                                    <div style="margin-bottom: 0.5rem;"><strong>Priority:</strong> <span class="badge ${
+                                        ticket.priority === 'Critical' ? 'badge-error' :
+                                        ticket.priority === 'High' ? 'badge-warning' : 'badge-info'
+                                    }">${ticket.priority}</span></div>
+                                    <div style="margin-bottom: 0.5rem;"><strong>Category:</strong> ${ticket.category}</div>
+                                    <div><strong>Date:</strong> ${ticket.date}</div>
+                                </div>
+                                <button class="btn btn-outline" onclick="viewTicketDetails(${ticket.id})">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getFacultyBookingPage() {
+            return `
+                <div class="page-content fade-in">
+                    <h1 style="color: white; margin-bottom: 2rem;">Faculty Appointment Booking</h1>
+                    
+                    <div class="grid grid-2">
+                        ${appData.faculty.map(faculty => `
+                            <div class="card">
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                    <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.2rem;">
+                                        ${faculty.name.split(' ').map(n => n[0]).join('')}
+                                    </div>
+                                    <div>
+                                        <h3 style="color: var(--primary); margin-bottom: 0.25rem;">${faculty.name}</h3>
+                                        <p style="color: var(--gray-600); margin: 0;">${faculty.department}</p>
+                                        <p style="color: var(--gray-500); margin: 0; font-size: 0.9rem;">${faculty.email}</p>
+                                    </div>
+                                </div>
+                                
+                                <h4 style="margin-bottom: 1rem;">Available Slots</h4>
+                                <div style="margin-bottom: 1.5rem;">
+                                    ${faculty.available_slots.map(slot => `
+                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border: 1px solid var(--gray-200); border-radius: 8px; margin-bottom: 0.5rem;">
+                                            <span>${slot}</span>
+                                            <button class="btn btn-primary" style="font-size: 0.8rem; padding: 0.25rem 0.75rem;" onclick="bookSlot('${faculty.name}', '${slot}')">
+                                                Book
+                                            </button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="card" style="margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">My Appointments</h3>
+                        <div id="my-appointments">
+                            <p style="color: var(--gray-600); text-align: center; padding: 2rem;">No appointments booked yet</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getHallBookingPage() {
+            return `
+                <div class="page-content fade-in">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h1 style="color: white;">Hall Booking System</h1>
+                        <button class="btn btn-primary" onclick="openModal('hall-booking-form')">
+                            <i class="fas fa-plus"></i> Request Booking
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-3">
+                        ${appData.halls.map(hall => `
+                            <div class="card">
+                                <div style="background: var(--gray-200); height: 150px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                                    <i class="fas fa-building" style="font-size: 3rem; color: var(--gray-400);"></i>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                    <h3 style="color: var(--primary);">${hall.name}</h3>
+                                    <span class="badge ${hall.available ? 'badge-success' : 'badge-error'}">
+                                        ${hall.available ? 'Available' : 'Booked'}
+                                    </span>
+                                </div>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <div style="margin-bottom: 0.5rem;"><strong>Capacity:</strong> ${hall.capacity} people</div>
+                                    <div><strong>Facilities:</strong> ${hall.facilities}</div>
+                                </div>
+                                <button class="btn ${hall.available ? 'btn-primary' : 'btn-outline'}" 
+                                        style="width: 100%;" 
+                                        ${!hall.available ? 'disabled' : ''}
+                                        onclick="${hall.available ? `requestHallBooking('${hall.name}')` : ''}">
+                                    <i class="fas ${hall.available ? 'fa-calendar-plus' : 'fa-lock'}"></i>
+                                    ${hall.available ? 'Request Booking' : 'Not Available'}
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="card" style="margin-top: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">My Booking Requests</h3>
+                        <div id="my-bookings">
+                            <p style="color: var(--gray-600); text-align: center; padding: 2rem;">No booking requests yet</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getLeaderboardPage() {
+            return `
+                <div class="page-content fade-in">
+                    <h1 style="color: white; margin-bottom: 2rem;">Student Leaderboard</h1>
+                    
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">🏆 Top Performers</h3>
+                        <div class="table" style="border-radius: 12px; overflow: hidden;">
+                            <table style="width: 100%;">
+                                <thead>
+                                    <tr style="background: var(--primary); color: white;">
+                                        <th>Rank</th>
+                                        <th>Student</th>
+                                        <th>Points</th>
+                                        <th>Level</th>
+                                        <th>Activities</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${appData.leaderboard.map(student => `
+                                        <tr style="${student.name === currentUser.name ? 'background: rgba(79, 70, 229, 0.1);' : ''}">
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                    <span style="background: ${
+                                                        student.rank === 1 ? '#FFD700' :
+                                                        student.rank === 2 ? '#C0C0C0' :
+                                                        student.rank === 3 ? '#CD7F32' : 'var(--gray-400)'
+                                                    }; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                                        ${student.rank}
+                                                    </span>
+                                                    ${student.rank <= 3 ? '<i class="fas fa-crown" style="color: #FFD700;"></i>' : ''}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="font-weight: 600;">${student.name}</div>
+                                                ${student.name === currentUser.name ? '<small style="color: var(--primary);">You</small>' : ''}
+                                            </td>
+                                            <td>
+                                                <span style="font-weight: 700; color: var(--success);">${student.points}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge ${
+                                                    student.level === 'Gold' ? 'badge-warning' :
+                                                    student.level === 'Silver' ? 'badge-info' : 'badge-success'
+                                                }">${student.level}</span>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.25rem 0.75rem;" 
+                                                        onclick="showActivities('${student.name}')">
+                                                    View Details
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">Points System</h3>
+                            <div style="space-y: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">
+                                    <span>Helping peers</span>
+                                    <span style="font-weight: 600;">+10 points</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">
+                                    <span>Club participation</span>
+                                    <span style="font-weight: 600;">+20 points</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">
+                                    <span>Event attendance</span>
+                                    <span style="font-weight: 600;">+15 points</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">
+                                    <span>Event organization</span>
+                                    <span style="font-weight: 600;">+50 points</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                                    <span>Club leadership</span>
+                                    <span style="font-weight: 600;">+100 points</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">Your Progress</h3>
+                            <div style="text-align: center; margin-bottom: 1.5rem;">
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">${currentUser.points}</div>
+                                <div style="color: var(--gray-600);">Total Points</div>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Progress to next level</span>
+                                    <span>75%</span>
+                                </div>
+                                <div style="background: var(--gray-200); height: 8px; border-radius: 4px;">
+                                    <div style="background: var(--primary); height: 100%; width: 75%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%;" onclick="showPage('clubs')">
+                                <i class="fas fa-arrow-up"></i> Earn More Points
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getAIRecommenderPage() {
+            return `
+                <div class="page-content fade-in">
+                    <h1 style="color: white; margin-bottom: 2rem;">🤖 AI Job Recommender</h1>
+                    
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Upload Your Resume</h3>
+                        <div class="upload-area" id="upload-area">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--gray-400); margin-bottom: 1rem;"></i>
+                            <h4 style="margin-bottom: 0.5rem;">Drag &amp; Drop your resume here</h4>
+                            <p style="color: var(--gray-600); margin-bottom: 1rem;">or</p>
+                            <label for="resume-file" class="file-label">
+                                <i class="fas fa-file-upload"></i> Choose File
+                            </label>
+                            <input type="file" id="resume-file" class="file-input" accept=".pdf,.doc,.docx">
+                            <p style="color: var(--gray-500); font-size: 0.9rem; margin-top: 1rem;">Supported formats: PDF, DOC, DOCX</p>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <button class="btn btn-primary" id="analyze-btn" onclick="analyzeResume()" disabled>
+                                <i class="fas fa-robot"></i> Analyze Resume
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="analysis-results" class="hidden">
+                        <div class="card" style="margin-bottom: 2rem;">
+                            <h3 style="margin-bottom: 1rem;">📊 Skills Analysis</h3>
+                            <div id="extracted-skills">
+                                <!-- Skills will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">💼 Recommended Jobs</h3>
+                            <div class="grid grid-2" id="job-recommendations">
+                                ${appData.jobRecommendations.map(job => `
+                                    <div class="job-card">
+                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                            <div>
+                                                <h4 style="color: var(--primary); margin-bottom: 0.25rem;">${job.job_title}</h4>
+                                                <p style="color: var(--gray-600); margin: 0;">${job.company}</p>
+                                                <p style="color: var(--gray-500); margin: 0; font-size: 0.9rem;">${job.location}</p>
+                                            </div>
+                                            <div class="match-percentage">${job.match_percentage}% Match</div>
+                                        </div>
+                                        
+                                        <div style="margin-bottom: 1rem;">
+                                            <h5 style="margin-bottom: 0.5rem;">Required Skills:</h5>
+                                            <div>
+                                                ${job.required_skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                                            </div>
+                                        </div>
+                                        
+                                        <button class="btn btn-primary" style="width: 100%;" onclick="applyToJob('${job.job_title}', '${job.company}')">
+                                            <i class="fas fa-external-link-alt"></i> Apply Now
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getAdminPage() {
+            return `
+                <div class="page-content fade-in">
+                    <h1 style="color: white; margin-bottom: 2rem;">Admin Panel</h1>
+                    
+                    <!-- Admin Stats -->
+                    <div class="grid grid-4" style="margin-bottom: 2rem;">
+                        <div class="stat-card">
+                            <div class="stat-number">${appData.users.length}</div>
+                            <div class="stat-label">Total Students</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${appData.hostelTickets.filter(t => t.status === 'Open').length}</div>
+                            <div class="stat-label">Active Tickets</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${appData.events.length}</div>
+                            <div class="stat-label">Upcoming Events</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${appData.clubs.length}</div>
+                            <div class="stat-label">Active Clubs</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Management Sections -->
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchAdminTab('tickets')">Hostel Tickets</button>
+                        <button class="tab" onclick="switchAdminTab('events')">Events</button>
+                        <button class="tab" onclick="switchAdminTab('clubs')">Clubs</button>
+                        <button class="tab" onclick="switchAdminTab('bookings')">Bookings</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="admin-tickets">
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">Manage Hostel Tickets</h3>
+                            <div style="overflow-x: auto;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Issue</th>
+                                            <th>Hostel</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${appData.hostelTickets.map(ticket => `
+                                            <tr>
+                                                <td>#${ticket.id}</td>
+                                                <td>${ticket.issue}</td>
+                                                <td>${ticket.hostel} - ${ticket.room}</td>
+                                                <td><span class="badge ${
+                                                    ticket.priority === 'Critical' ? 'badge-error' :
+                                                    ticket.priority === 'High' ? 'badge-warning' : 'badge-info'
+                                                }">${ticket.priority}</span></td>
+                                                <td><span class="badge ${
+                                                    ticket.status === 'Open' ? 'badge-error' :
+                                                    ticket.status === 'In Progress' ? 'badge-warning' :
+                                                    'badge-success'
+                                                }">${ticket.status}</span></td>
+                                                <td>
+                                                    <button class="btn btn-primary" style="font-size: 0.8rem; padding: 0.25rem 0.5rem; margin-right: 0.5rem;" 
+                                                            onclick="updateTicketStatus(${ticket.id}, 'In Progress')">
+                                                        Process
+                                                    </button>
+                                                    <button class="btn btn-success" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" 
+                                                            onclick="updateTicketStatus(${ticket.id}, 'Resolved')">
+                                                        Resolve
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="admin-events">
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h3>Manage Events</h3>
+                                <button class="btn btn-primary" onclick="openModal('admin-event-form')">
+                                    <i class="fas fa-plus"></i> Add Event
+                                </button>
+                            </div>
+                            <div class="grid grid-2">
+                                ${appData.events.map(event => `
+                                    <div class="card">
+                                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">${event.title}</h4>
+                                        <p style="color: var(--gray-600); margin-bottom: 1rem;">${event.description || 'Event description'}</p>
+                                        <div style="margin-bottom: 1rem; font-size: 0.9rem;">
+                                            <div><strong>Date:</strong> ${event.date} ${event.time}</div>
+                                            <div><strong>Location:</strong> ${event.location}</div>
+                                            <div><strong>Organizer:</strong> ${event.organizer}</div>
+                                        </div>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button class="btn btn-outline" onclick="editEvent(${event.id})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-error" onclick="deleteEvent(${event.id})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="admin-clubs">
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h3>Manage Clubs</h3>
+                                <button class="btn btn-primary" onclick="openModal('admin-club-form')">
+                                    <i class="fas fa-plus"></i> Add Club
+                                </button>
+                            </div>
+                            <div class="grid grid-3">
+                                ${appData.clubs.map(club => `
+                                    <div class="card">
+                                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">${club.name}</h4>
+                                        <p style="color: var(--gray-600); margin-bottom: 1rem;">${club.description}</p>
+                                        <div style="margin-bottom: 1rem; font-size: 0.9rem;">
+                                            <div><strong>Category:</strong> ${club.category}</div>
+                                            <div><strong>Members:</strong> ${club.members}</div>
+                                        </div>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button class="btn btn-outline" onclick="editClub(${club.id})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-error" onclick="deleteClub(${club.id})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="admin-bookings">
+                        <div class="card">
+                            <h3 style="margin-bottom: 1rem;">Booking Approvals</h3>
+                            <p style="color: var(--gray-600);">Hall booking and faculty appointment approval system will be implemented here.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Utility Functions
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast toast-${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function openModal(formType) {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            
+            let title, content;
+            
+            switch(formType) {
+                case 'marketplace-form':
+                    title = 'Post New Item';
+                    content = `
+                        <form onsubmit="submitMarketplaceItem(event)">
+                            <div class="form-group">
+                                <label class="form-label">Item Title</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Books">Books</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Cycles">Cycles</option>
+                                    <option value="Furniture">Furniture</option>
+                                    <option value="Stationery">Stationery</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Price (₹)</label>
+                                <input type="number" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-input" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-plus"></i> Post Item
+                            </button>
+                        </form>
+                    `;
+                    break;
+                case 'ticket-form':
+                    title = 'Raise New Ticket';
+                    content = `
+                        <form onsubmit="submitTicket(event)">
+                            <div class="form-group">
+                                <label class="form-label">Issue Title</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Internet">Internet</option>
+                                    <option value="Maintenance">Maintenance</option>
+                                    <option value="Cleaning">Cleaning</option>
+                                    <option value="Security">Security</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hostel</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Hostel</option>
+                                    <option value="Hostel A">Hostel A</option>
+                                    <option value="Hostel B">Hostel B</option>
+                                    <option value="Hostel C">Hostel C</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Room Number</label>
+                                <input type="text" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Priority</label>
+                                <select class="form-select" required>
+                                    <option value="">Select Priority</option>
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-input" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-ticket-alt"></i> Submit Ticket
+                            </button>
+                        </form>
+                    `;
+                    break;
+                // Add more modal forms as needed
+            }
+            
+            modalTitle.textContent = title;
+            modalBody.innerHTML = content;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // Event Listeners
+        document.getElementById('modal-close').addEventListener('click', closeModal);
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        function switchAdminTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`admin-${tabName}`).classList.add('active');
+        }
+
+        // Initialize placement charts
+        function initializePlacementCharts() {
+            // Top Recruiters Chart
+            const recruitersCtx = document.getElementById('recruiters-chart');
+            if (recruitersCtx) {
+                new Chart(recruitersCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: appData.placementStats.top_recruiters,
+                        datasets: [{
+                            label: 'Students Placed',
+                            data: [25, 20, 18, 15, 12],
+                            backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Department Chart
+            const deptCtx = document.getElementById('department-chart');
+            if (deptCtx) {
+                new Chart(deptCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: appData.placementStats.department_wise.map(d => d.department),
+                        datasets: [{
+                            data: appData.placementStats.department_wise.map(d => d.placed),
+                            backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }
+
+        // File upload functionality
+        function initializeFileUpload() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('resume-file');
+            const analyzeBtn = document.getElementById('analyze-btn');
+            
+            if (!uploadArea || !fileInput || !analyzeBtn) return;
+            
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect(files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    handleFileSelect(this.files[0]);
+                }
+            });
+            
+            function handleFileSelect(file) {
+                const fileName = file.name;
+                uploadArea.innerHTML = `
+                    <i class="fas fa-file-alt" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+                    <h4 style="margin-bottom: 0.5rem; color: var(--success);">File Selected</h4>
+                    <p style="color: var(--gray-600);">${fileName}</p>
+                `;
+                analyzeBtn.disabled = false;
+                analyzeBtn.style.opacity = '1';
+            }
+        }
+
+        function analyzeResume() {
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const resultsDiv = document.getElementById('analysis-results');
+            const skillsDiv = document.getElementById('extracted-skills');
+            
+            // Show loading state
+            analyzeBtn.innerHTML = '<div class="loading"></div> Analyzing...';
+            analyzeBtn.disabled = true;
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                // Reset button
+                analyzeBtn.innerHTML = '<i class="fas fa-robot"></i> Analyze Resume';
+                analyzeBtn.disabled = false;
+                
+                // Show extracted skills
+                const sampleSkills = ['Python', 'JavaScript', 'React', 'Node.js', 'MongoDB', 'Machine Learning', 'Data Structures', 'Algorithms'];
+                skillsDiv.innerHTML = `
+                    <p style="margin-bottom: 1rem;">We found these skills in your resume:</p>
+                    <div>
+                        ${sampleSkills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                    </div>
+                `;
+                
+                // Show results
+                resultsDiv.classList.remove('hidden');
+                
+                showToast('Resume analyzed successfully!', 'success');
+            }, 2000);
+        }
+
+        // Action Functions
+        function contactSeller(seller) {
+            showToast(`Connecting you with ${seller}...`, 'success');
+        }
+
+        function contactPerson(email) {
+            showToast(`Opening email to ${email}...`, 'success');
+        }
+
+        function rsvpEvent(eventId) {
+            showToast('RSVP confirmed! Event added to your calendar.', 'success');
+        }
+
+        function addToCalendar(eventId) {
+            showToast('Calendar file downloaded!', 'success');
+        }
+
+        function joinClub(clubId) {
+            showToast('Club join request submitted!', 'success');
+        }
+
+        function bookSlot(facultyName, slot) {
+            showToast(`Appointment booked with ${facultyName} for ${slot}`, 'success');
+        }
+
+        function requestHallBooking(hallName) {
+            showToast(`Booking request submitted for ${hallName}`, 'success');
+        }
+
+        function showActivities(studentName) {
+            const student = appData.leaderboard.find(s => s.name === studentName);
+            if (student) {
+                const modal = document.getElementById('modal');
+                const modalTitle = document.getElementById('modal-title');
+                const modalBody = document.getElementById('modal-body');
+                
+                modalTitle.textContent = `${student.name}'s Activities`;
+                modalBody.innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-size: 1.2rem; font-weight: 600; color: var(--primary);">Rank: #${student.rank}</div>
+                        <div style="font-size: 1.1rem; color: var(--success);">Points: ${student.points}</div>
+                        <div style="margin-top: 0.5rem;"><span class="badge badge-warning">${student.level} Level</span></div>
+                    </div>
+                    <h4 style="margin-bottom: 1rem;">Activities:</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        ${student.activities.map(activity => `
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                ${activity}
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                modal.classList.add('active');
+            }
+        }
+
+        function applyToJob(jobTitle, company) {
+            showToast(`Redirecting to ${company} careers page for ${jobTitle}...`, 'success');
+        }
+
+        function updateTicketStatus(ticketId, newStatus) {
+            const ticket = appData.hostelTickets.find(t => t.id === ticketId);
+            if (ticket) {
+                ticket.status = newStatus;
+                showToast(`Ticket #${ticketId} status updated to ${newStatus}`, 'success');
+                // Refresh admin page
+                if (currentPage === 'admin') {
+                    loadPageContent('admin');
+                }
+            }
+        }
+
+        // Filter functions
+        function filterMarketplace(category) {
+            const items = document.querySelectorAll('#marketplace-grid .card');
+            items.forEach(item => {
+                const itemCategory = item.dataset.category;
+                if (category === 'All' || itemCategory === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function searchMarketplace(query) {
+            const items = document.querySelectorAll('#marketplace-grid .card');
+            items.forEach(item => {
+                const title = item.querySelector('h3').textContent.toLowerCase();
+                if (title.includes(query.toLowerCase())) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function filterEvents(category) {
+            const events = document.querySelectorAll('#events-grid .card');
+            events.forEach(event => {
+                const eventCategory = event.dataset.category;
+                if (category === 'All' || eventCategory === category) {
+                    event.style.display = 'block';
+                } else {
+                    event.style.display = 'none';
+                }
+            });
+        }
+
+        function filterClubs(category) {
+            const clubs = document.querySelectorAll('#clubs-grid .card');
+            clubs.forEach(club => {
+                const clubCategory = club.dataset.category;
+                if (category === 'All' || clubCategory === category) {
+                    club.style.display = 'block';
+                } else {
+                    club.style.display = 'none';
+                }
+            });
+        }
+
+        // Form submission handlers
+        function submitMarketplaceItem(event) {
+            event.preventDefault();
+            showToast('Item posted successfully!', 'success');
+            closeModal();
+        }
+
+        function submitTicket(event) {
+            event.preventDefault();
+            showToast('Ticket submitted successfully!', 'success');
+            closeModal();
+        }
+
+        // Mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('mobile-hidden');
+        });
+
+        // Responsive handling
+        function handleResize() {
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            if (window.innerWidth <= 768) {
+                menuToggle.style.display = 'block';
+                sidebar.classList.add('mobile-hidden');
+            } else {
+                menuToggle.style.display = 'none';
+                sidebar.classList.remove('mobile-hidden');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial call
+
+        // Initialize the application
+        function initApp() {
+            // App is already initialized through HTML
+            console.log('NITCConnect initialized successfully!');
+        }
+
+        // Call initialization when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
